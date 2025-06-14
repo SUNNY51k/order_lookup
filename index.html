@@ -3,40 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Order Lookup</title>
+  <title>Order Lookup - Exclusive Deal</title>
   <style>
     body {
       background: #f7f9fc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
       margin: 0;
-      padding: 40px 20px;
+      padding: 0;
     }
+
+    .brand-header {
+      background: linear-gradient(90deg, #0078d7, #00b3ff);
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
     .container {
       background: white;
+      margin: 30px auto;
       padding: 30px 40px;
       border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      max-width: 900px;
+      width: 95%;
     }
+
     h1 {
       text-align: center;
       color: #333;
       margin-bottom: 25px;
       font-weight: 700;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       letter-spacing: 1px;
     }
+
     .search-bar {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       flex-wrap: wrap;
+      justify-content: center;
     }
+
     select, input[type="text"] {
       padding: 12px 15px;
       font-size: 1rem;
@@ -44,13 +57,16 @@
       border-radius: 8px;
       transition: border-color 0.3s ease;
       flex-grow: 1;
-      min-width: 120px;
+      min-width: 180px;
+      max-width: 240px;
     }
+
     select:focus, input[type="text"]:focus {
       outline: none;
       border-color: #0078d7;
       box-shadow: 0 0 6px #0078d7aa;
     }
+
     button {
       background-color: #0078d7;
       border: none;
@@ -63,38 +79,74 @@
       transition: background-color 0.3s ease;
       white-space: nowrap;
     }
+
     button:hover {
       background-color: #005ea2;
     }
+
     .result {
-      background: #f0f4f8;
-      border-radius: 8px;
-      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+      margin-top: 20px;
+    }
+
+    .info, .error {
+      padding: 15px;
       font-size: 1rem;
-      color: #222;
-      line-height: 1.6;
-      min-height: 120px;
-      white-space: pre-wrap;
-      user-select: text;
-      box-shadow: inset 0 0 5px #cbd5e1;
-      word-break: break-word;
+      border-radius: 8px;
+      margin-top: 20px;
+      width: 100%;
     }
-    .error {
-      color: #cc0000;
-      font-weight: 600;
-    }
+
     .info {
-      color: #555;
+      background: #f0f4f8;
+      color: #444;
       font-style: italic;
     }
-    .record-block {
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #ccc;
+
+    .error {
+      background: #ffe4e4;
+      color: #b10000;
+      font-weight: 600;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      min-width: 260px;
+      max-width: 300px;
+      flex: 1 1 auto;
+    }
+
+    .card strong {
+      display: inline-block;
+      width: 120px;
+      color: #555;
+    }
+
+    .card:not(:last-child) {
+      margin-bottom: 0;
+    }
+
+    @media screen and (max-width: 600px) {
+      .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .card {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+
+  <div class="brand-header">Exclusive Deal</div>
 
   <div class="container">
     <h1>Order Lookup</h1>
@@ -106,7 +158,7 @@
       <input type="text" id="searchValue" placeholder="Enter your search" aria-label="Search value" />
       <button onclick="searchOrder()">Search</button>
     </div>
-    <div id="result" class="result info">Enter an Order Id or Email Address to search for order details.</div>
+    <div id="result" class="info">Enter an Order Id or Email Address to search for order details.</div>
   </div>
 
   <script>
@@ -116,15 +168,15 @@
       const resultDiv = document.getElementById('result');
 
       if (!searchValue) {
-        resultDiv.className = 'result error';
+        resultDiv.className = 'error';
         resultDiv.textContent = `⚠️ Please enter a ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
         return;
       }
 
-      resultDiv.className = 'result info';
+      resultDiv.className = 'info';
       resultDiv.textContent = '🔎 Searching...';
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace this with your Apps Script URL
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace this
 
       let url = scriptUrl + '?';
       if (searchType === 'orderId') {
@@ -138,13 +190,13 @@
         const data = await response.json();
 
         if (data.error) {
-          resultDiv.className = 'result error';
+          resultDiv.className = 'error';
           resultDiv.textContent = `❌ Error: ${data.error}`;
           return;
         }
 
         if (!data.length) {
-          resultDiv.className = 'result info';
+          resultDiv.className = 'info';
           resultDiv.textContent = `🔍 No results found for that ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
           return;
         }
@@ -152,11 +204,10 @@
         resultDiv.className = 'result';
         let html = '';
 
-        data.forEach((order, index) => {
-          html += `<div class="record-block">`;
-          html += `<strong>Result ${index + 1}:</strong><br>`;
+        data.forEach((order) => {
+          html += `<div class="card">`;
           for (const key in order) {
-            html += `<strong>${key}:</strong> ${order[key] || 'N/A'}<br>`;
+            html += `<div><strong>${key}:</strong> ${order[key] || 'N/A'}</div>`;
           }
           html += `</div>`;
         });
@@ -164,7 +215,7 @@
         resultDiv.innerHTML = html;
 
       } catch (error) {
-        resultDiv.className = 'result error';
+        resultDiv.className = 'error';
         resultDiv.textContent = '⚠️ Failed to fetch data. Please try again later.';
         console.error(error);
       }

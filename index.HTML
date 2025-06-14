@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Lookup</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; }
+    input, button { padding: 10px; font-size: 16px; margin-right: 10px; }
+    pre { background: #f4f4f4; padding: 15px; margin-top: 20px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+  <h2>Search Order by Order ID</h2>
+  <input type="text" id="orderId" placeholder="Enter Order ID" />
+  <button onclick="searchOrder()">Search</button>
+
+  <pre id="result"></pre>
+
+  <script>
+    async function searchOrder() {
+      const orderId = document.getElementById('orderId').value.trim();
+      const resultEl = document.getElementById('result');
+
+      if (!orderId) {
+        resultEl.textContent = 'Please enter an Order ID.';
+        return;
+      }
+
+      // Replace this URL with your deployed Google Apps Script URL
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbzcNkb24_wKMIEwLizC2Hyn0R2CtXNLyGmogBnxAwUGdwTJrbD-cGNP0pcoGaMCx8g8ig/exec";
+
+      try {
+        const response = await fetch(`${scriptUrl}?orderId=${encodeURIComponent(orderId)}`);
+        const data = await response.json();
+
+        if (data.error) {
+          resultEl.textContent = `Error: ${data.error}`;
+          return;
+        }
+
+        if (data.length === 0) {
+          resultEl.textContent = 'No order found with that Order ID.';
+          return;
+        }
+
+        // Pretty-print JSON result
+        resultEl.textContent = JSON.stringify(data[0], null, 2);
+
+      } catch (err) {
+        resultEl.textContent = 'Error fetching data.';
+        console.error(err);
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -135,7 +135,6 @@
   </div>
 
   <div id="loading">Searching...</div>
-
   <div id="result"></div>
 
   <script>
@@ -159,8 +158,7 @@
       resultEl.innerHTML = '';
       loadingEl.style.display = 'block';
 
-      // 🔁 Replace this with your actual Google Apps Script URL
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxN-iLVoi2s0Skf0YQFcNzhTWshTM6_dLJkTkdby-wtijtSuT9Ya9tXI2n6-ZyJCR68/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxNer9RJlPG1tJb3fVDfV2cjqRyON1cd3YFpZGst_2WjhE4kk8vkFRIQgcs8R1H4A0i/exec';
 
       try {
         const response = await fetch(`${scriptUrl}?searchValue=${encodeURIComponent(searchValue)}`);
@@ -177,7 +175,6 @@
           return;
         }
 
-        // Build the table
         const table = document.createElement('table');
         const headers = Object.keys(data[0]);
 
@@ -200,11 +197,10 @@
         });
 
         resultEl.appendChild(table);
-
       } catch (err) {
         loadingEl.style.display = 'none';
         resultEl.textContent = 'Error fetching data.';
-        console.error('Fetch error:', err);
+        console.error(err);
       }
     }
   </script>

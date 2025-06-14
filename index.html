@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Order Lookup - Exclusive Deal</title>
+  <title>Exclusive Deal - Order Lookup</title>
   <style>
     body {
       background: #f7f9fc;
@@ -24,80 +24,53 @@
     }
 
     .container {
-      background: white;
       margin: 30px auto;
-      padding: 30px 40px;
+      padding: 20px;
+      max-width: 960px;
+      width: 95%;
+      background: white;
       border-radius: 10px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      max-width: 900px;
-      width: 95%;
     }
 
-    h1 {
+    h2 {
       text-align: center;
       color: #333;
       margin-bottom: 25px;
-      font-weight: 700;
-      font-size: 1.6rem;
-      letter-spacing: 1px;
     }
 
     .search-bar {
       display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
       flex-wrap: wrap;
+      gap: 10px;
       justify-content: center;
+      margin-bottom: 20px;
     }
 
-    select, input[type="text"] {
+    select, input, button {
       padding: 12px 15px;
       font-size: 1rem;
-      border: 2px solid #ddd;
       border-radius: 8px;
-      transition: border-color 0.3s ease;
-      flex-grow: 1;
-      min-width: 180px;
-      max-width: 240px;
-    }
-
-    select:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: #0078d7;
-      box-shadow: 0 0 6px #0078d7aa;
+      border: 1px solid #ccc;
     }
 
     button {
       background-color: #0078d7;
-      border: none;
       color: white;
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1rem;
+      font-weight: bold;
+      border: none;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      white-space: nowrap;
     }
 
     button:hover {
       background-color: #005ea2;
     }
 
-    .result {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: flex-start;
-      margin-top: 20px;
-    }
-
     .info, .error {
-      padding: 15px;
-      font-size: 1rem;
-      border-radius: 8px;
       margin-top: 20px;
-      width: 100%;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1rem;
     }
 
     .info {
@@ -109,37 +82,52 @@
     .error {
       background: #ffe4e4;
       color: #b10000;
-      font-weight: 600;
+      font-weight: bold;
     }
 
-    .card {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      min-width: 260px;
-      max-width: 300px;
-      flex: 1 1 auto;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
 
-    .card strong {
-      display: inline-block;
-      width: 120px;
-      color: #555;
+    table thead {
+      background-color: #0078d7;
+      color: white;
     }
 
-    .card:not(:last-child) {
-      margin-bottom: 0;
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      font-size: 0.95rem;
     }
 
-    @media screen and (max-width: 600px) {
-      .search-bar {
-        flex-direction: column;
-        align-items: stretch;
+    table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
       }
-      .card {
-        min-width: 100%;
+      thead {
+        display: none;
+      }
+      tr {
+        margin-bottom: 15px;
+      }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        color: #0078d7;
       }
     }
   </style>
@@ -149,15 +137,17 @@
   <div class="brand-header">Exclusive Deal</div>
 
   <div class="container">
-    <h1>Order Lookup</h1>
+    <h2>Order Lookup</h2>
+
     <div class="search-bar">
-      <select id="searchType" aria-label="Search By">
+      <select id="searchType">
         <option value="orderId">Order Id</option>
         <option value="email">Email Address</option>
       </select>
-      <input type="text" id="searchValue" placeholder="Enter your search" aria-label="Search value" />
+      <input type="text" id="searchValue" placeholder="Enter your search" />
       <button onclick="searchOrder()">Search</button>
     </div>
+
     <div id="result" class="info">Enter an Order Id or Email Address to search for order details.</div>
   </div>
 
@@ -169,21 +159,15 @@
 
       if (!searchValue) {
         resultDiv.className = 'error';
-        resultDiv.textContent = `⚠️ Please enter a ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
+        resultDiv.textContent = `⚠️ Please enter a valid ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
         return;
       }
 
       resultDiv.className = 'info';
       resultDiv.textContent = '🔎 Searching...';
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace this
-
-      let url = scriptUrl + '?';
-      if (searchType === 'orderId') {
-        url += 'orderId=' + encodeURIComponent(searchValue);
-      } else {
-        url += 'email=' + encodeURIComponent(searchValue);
-      }
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace with your actual Apps Script URL
+      const url = `${scriptUrl}?${searchType}=${encodeURIComponent(searchValue)}`;
 
       try {
         const response = await fetch(url);
@@ -191,33 +175,41 @@
 
         if (data.error) {
           resultDiv.className = 'error';
-          resultDiv.textContent = `❌ Error: ${data.error}`;
+          resultDiv.textContent = `❌ ${data.error}`;
           return;
         }
 
         if (!data.length) {
           resultDiv.className = 'info';
-          resultDiv.textContent = `🔍 No results found for that ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
+          resultDiv.textContent = '🔍 No matching records found.';
           return;
         }
 
-        resultDiv.className = 'result';
-        let html = '';
+        // Generate Table
+        const headers = Object.keys(data[0]);
+        let tableHTML = '<table><thead><tr>';
+        headers.forEach(header => {
+          tableHTML += `<th>${header}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody>';
 
-        data.forEach((order) => {
-          html += `<div class="card">`;
-          for (const key in order) {
-            html += `<div><strong>${key}:</strong> ${order[key] || 'N/A'}</div>`;
-          }
-          html += `</div>`;
+        data.forEach(row => {
+          tableHTML += '<tr>';
+          headers.forEach(header => {
+            tableHTML += `<td data-label="${header}">${row[header] || ''}</td>`;
+          });
+          tableHTML += '</tr>';
         });
 
-        resultDiv.innerHTML = html;
+        tableHTML += '</tbody></table>';
 
-      } catch (error) {
+        resultDiv.className = 'result';
+        resultDiv.innerHTML = tableHTML;
+
+      } catch (err) {
         resultDiv.className = 'error';
         resultDiv.textContent = '⚠️ Failed to fetch data. Please try again later.';
-        console.error(error);
+        console.error(err);
       }
     }
   </script>

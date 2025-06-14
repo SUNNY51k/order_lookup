@@ -7,18 +7,17 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 700px;
+      max-width: 800px;
       margin: 40px auto;
       padding: 0 15px;
       color: #333;
     }
 
-    /* Brand header */
     .brand-header {
       background: linear-gradient(90deg, #0078d7, #00b3ff);
       color: white;
       font-size: 2.5rem;
-      font-weight: 700;
+      font-weight: bold;
       padding: 20px 0;
       text-align: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -28,49 +27,50 @@
       border-radius: 8px;
     }
 
-    /* Search bar */
     .search-bar {
       display: flex;
       gap: 10px;
       justify-content: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
+
     .search-bar input {
       padding: 12px 15px;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
       flex-grow: 1;
-      box-sizing: border-box;
+      min-width: 250px;
     }
+
     .search-bar button {
-      padding: 12px 25px;
+      padding: 12px 20px;
       font-size: 16px;
-      background-color: #0078d7;
       border: none;
       border-radius: 8px;
-      color: white;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    .search-bar button:hover {
+
+    .search-bar .search-btn {
+      background-color: #0078d7;
+      color: white;
+    }
+
+    .search-bar .search-btn:hover {
       background-color: #005ea3;
     }
+
     .search-bar .clear-btn {
       background: #888;
-      margin-left: 5px;
-      width: 40px;
-      font-weight: bold;
-      padding: 12px 0;
-      border-radius: 8px;
-      font-size: 18px;
-      line-height: 1;
+      color: white;
     }
+
     .search-bar .clear-btn:hover {
       background: #555;
     }
 
-    /* Loading text */
     #loading {
       text-align: center;
       margin-top: 15px;
@@ -79,7 +79,6 @@
       display: none;
     }
 
-    /* Results table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -88,33 +87,35 @@
       border-radius: 8px;
       overflow: hidden;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 12px 15px;
       text-align: left;
     }
+
     th {
       background-color: #0078d7;
       color: white;
-      font-weight: 600;
     }
+
     tr:nth-child(even) {
       background-color: #f9f9f9;
     }
+
     tr:hover {
       background-color: #f1f1f1;
     }
 
-    /* Responsive */
     @media (max-width: 600px) {
       .search-bar {
         flex-direction: column;
       }
-      .search-bar button, .search-bar .clear-btn {
+
+      .search-bar button {
         width: 100%;
-        margin-left: 0;
-        margin-top: 10px;
       }
+
       table {
         display: block;
         overflow-x: auto;
@@ -129,8 +130,8 @@
 
   <div class="search-bar">
     <input type="text" id="searchValue" placeholder="Enter Order ID or Email" />
-    <button onclick="searchOrder()">Search</button>
-    <button class="clear-btn" title="Clear" onclick="clearSearch()">×</button>
+    <button class="search-btn" onclick="searchOrder()">Search</button>
+    <button class="clear-btn" onclick="clearSearch()">Clear</button>
   </div>
 
   <div id="loading">Searching...</div>
@@ -158,13 +159,12 @@
       resultEl.innerHTML = '';
       loadingEl.style.display = 'block';
 
-      // Replace with your deployed Google Apps Script URL
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxnY9_w5gys6aXZXN4IeSK3Yyyys65b59S4L2IDgvRTaGii5GupfC_bxYmvUD78MzvK/exec';
+      // 🔁 Replace this with your actual Google Apps Script URL
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxN-iLVoi2s0Skf0YQFcNzhTWshTM6_dLJkTkdby-wtijtSuT9Ya9tXI2n6-ZyJCR68/exec';
 
       try {
         const response = await fetch(`${scriptUrl}?searchValue=${encodeURIComponent(searchValue)}`);
         const data = await response.json();
-
         loadingEl.style.display = 'none';
 
         if (data.error) {
@@ -173,29 +173,27 @@
         }
 
         if (data.length === 0) {
-          resultEl.textContent = 'No order found with that Order ID or Email.';
+          resultEl.textContent = 'No matching records found.';
           return;
         }
 
-        // Build table
+        // Build the table
         const table = document.createElement('table');
-        const headerRow = document.createElement('tr');
-
-        // Dynamically get keys for headers from first object
         const headers = Object.keys(data[0]);
-        headers.forEach(header => {
+
+        const headerRow = document.createElement('tr');
+        headers.forEach(key => {
           const th = document.createElement('th');
-          th.textContent = header.replace(/([A-Z])/g, ' $1').trim(); // Add spaces before caps for readability
+          th.textContent = key;
           headerRow.appendChild(th);
         });
         table.appendChild(headerRow);
 
-        // Add rows
         data.forEach(row => {
           const tr = document.createElement('tr');
-          headers.forEach(header => {
+          headers.forEach(key => {
             const td = document.createElement('td');
-            td.textContent = row[header] || ''; // Show empty if missing
+            td.textContent = row[key] || '';
             tr.appendChild(td);
           });
           table.appendChild(tr);
@@ -206,7 +204,7 @@
       } catch (err) {
         loadingEl.style.display = 'none';
         resultEl.textContent = 'Error fetching data.';
-        console.error(err);
+        console.error('Fetch error:', err);
       }
     }
   </script>

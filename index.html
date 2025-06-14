@@ -3,133 +3,122 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Exclusive Deal - Track you Orders </title>
+  <title>Track Order Details</title>
   <style>
     body {
-      background: #f7f9fc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    .brand-header {
-  background: linear-gradient(90deg, #0078d7, #00b3ff);
-  color: white;
-  text-align: center;
-  padding: 20px 10px;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  text-transform: uppercase;
-}
-
-
-    .container {
-      margin: 30px auto;
-      padding: 20px;
-      max-width: 960px;
-      width: 95%;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
-
-    h2 {
-      text-align: center;
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 15px;
       color: #333;
-      margin-bottom: 25px;
     }
 
+    /* Brand header */
+    .brand-header {
+      background: linear-gradient(90deg, #0078d7, #00b3ff);
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 700;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+    }
+
+    /* Search bar */
     .search-bar {
       display: flex;
-      flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
       margin-bottom: 20px;
     }
-
-    select, input, button {
+    .search-bar input {
       padding: 12px 15px;
-      font-size: 1rem;
+      font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      flex-grow: 1;
+      box-sizing: border-box;
     }
-
-    button {
+    .search-bar button {
+      padding: 12px 25px;
+      font-size: 16px;
       background-color: #0078d7;
-      color: white;
-      font-weight: bold;
       border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #005ea2;
-    }
-
-    .info, .error {
-      margin-top: 20px;
-      padding: 15px;
       border-radius: 8px;
-      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
-    .info {
-      background: #f0f4f8;
-      color: #444;
-      font-style: italic;
+    .search-bar button:hover {
+      background-color: #005ea3;
     }
-
-    .error {
-      background: #ffe4e4;
-      color: #b10000;
+    .search-bar .clear-btn {
+      background: #888;
+      margin-left: 5px;
+      width: 40px;
       font-weight: bold;
+      padding: 12px 0;
+      border-radius: 8px;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .search-bar .clear-btn:hover {
+      background: #555;
     }
 
+    /* Loading text */
+    #loading {
+      text-align: center;
+      margin-top: 15px;
+      font-style: italic;
+      color: #555;
+      display: none;
+    }
+
+    /* Results table */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
     }
-
-    table thead {
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    th {
       background-color: #0078d7;
       color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
     }
 
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-      font-size: 0.95rem;
-    }
-
-    table tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
+    /* Responsive */
+    @media (max-width: 600px) {
+      .search-bar {
+        flex-direction: column;
+      }
+      .search-bar button, .search-bar .clear-btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+      }
+      table {
         display: block;
-      }
-      thead {
-        display: none;
-      }
-      tr {
-        margin-bottom: 15px;
-      }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        font-weight: bold;
-        color: #0078d7;
+        overflow-x: auto;
+        white-space: nowrap;
       }
     }
   </style>
@@ -138,79 +127,85 @@
 
   <div class="brand-header">Exclusive Deal</div>
 
-  <div class="container">
-    <h2>Track your Orders</h2>
-
-    <div class="search-bar">
-      <select id="searchType">
-        <option value="orderId">Order Id</option>
-        <option value="email">Email Address</option>
-      </select>
-      <input type="text" id="searchValue" placeholder="Enter your search" />
-      <button onclick="searchOrder()">Search</button>
-    </div>
-
-    <div id="result" class="info">Enter an Order Id or Email Address to search for order details.</div>
+  <div class="search-bar">
+    <input type="text" id="searchValue" placeholder="Enter Order ID or Email" />
+    <button onclick="searchOrder()">Search</button>
+    <button class="clear-btn" title="Clear" onclick="clearSearch()">×</button>
   </div>
 
-  <script>
-    async function searchOrder() {
-      const searchType = document.getElementById('searchType').value;
-      const searchValue = document.getElementById('searchValue').value.trim();
-      const resultDiv = document.getElementById('result');
+  <div id="loading">Searching...</div>
 
+  <div id="result"></div>
+
+  <script>
+    const resultEl = document.getElementById('result');
+    const loadingEl = document.getElementById('loading');
+    const inputEl = document.getElementById('searchValue');
+
+    function clearSearch() {
+      inputEl.value = '';
+      resultEl.innerHTML = '';
+      inputEl.focus();
+    }
+
+    async function searchOrder() {
+      const searchValue = inputEl.value.trim();
       if (!searchValue) {
-        resultDiv.className = 'error';
-        resultDiv.textContent = `⚠️ Please enter a valid ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
+        resultEl.textContent = 'Please enter an Order ID or Email.';
         return;
       }
 
-      resultDiv.className = 'info';
-      resultDiv.textContent = '🔎 Searching...';
+      resultEl.innerHTML = '';
+      loadingEl.style.display = 'block';
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace with your actual Apps Script URL
-      const url = `${scriptUrl}?${searchType}=${encodeURIComponent(searchValue)}&t=${Date.now()}`;
+      // Replace with your deployed Google Apps Script URL
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzcNkb24_wKMIEwLizC2Hyn0R2CtXNLyGmogBnxAwUGdwTJrbD-cGNP0pcoGaMCx8g8ig/exec';
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(`${scriptUrl}?searchValue=${encodeURIComponent(searchValue)}`);
         const data = await response.json();
 
+        loadingEl.style.display = 'none';
+
         if (data.error) {
-          resultDiv.className = 'error';
-          resultDiv.textContent = `❌ ${data.error}`;
+          resultEl.textContent = `Error: ${data.error}`;
           return;
         }
 
-        if (!data.length) {
-          resultDiv.className = 'info';
-          resultDiv.textContent = '🔍 No matching records found.';
+        if (data.length === 0) {
+          resultEl.textContent = 'No order found with that Order ID or Email.';
           return;
         }
 
-        // Generate Table
+        // Build table
+        const table = document.createElement('table');
+        const headerRow = document.createElement('tr');
+
+        // Dynamically get keys for headers from first object
         const headers = Object.keys(data[0]);
-        let tableHTML = '<table><thead><tr>';
         headers.forEach(header => {
-          tableHTML += `<th>${header}</th>`;
+          const th = document.createElement('th');
+          th.textContent = header.replace(/([A-Z])/g, ' $1').trim(); // Add spaces before caps for readability
+          headerRow.appendChild(th);
         });
-        tableHTML += '</tr></thead><tbody>';
+        table.appendChild(headerRow);
 
+        // Add rows
         data.forEach(row => {
-          tableHTML += '<tr>';
+          const tr = document.createElement('tr');
           headers.forEach(header => {
-            tableHTML += `<td data-label="${header}">${row[header] || ''}</td>`;
+            const td = document.createElement('td');
+            td.textContent = row[header] || ''; // Show empty if missing
+            tr.appendChild(td);
           });
-          tableHTML += '</tr>';
+          table.appendChild(tr);
         });
 
-        tableHTML += '</tbody></table>';
-
-        resultDiv.className = 'result';
-        resultDiv.innerHTML = tableHTML;
+        resultEl.appendChild(table);
 
       } catch (err) {
-        resultDiv.className = 'error';
-        resultDiv.textContent = '⚠️ Failed to fetch data. Please try again later.';
+        loadingEl.style.display = 'none';
+        resultEl.textContent = 'Error fetching data.';
         console.error(err);
       }
     }

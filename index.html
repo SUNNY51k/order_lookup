@@ -3,123 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Track Order Details</title>
+  <title>Exclusive Deal - Order Lookup</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 15px;
-      color: #333;
+      background: #f7f9fc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     .brand-header {
       background: linear-gradient(90deg, #0078d7, #00b3ff);
       color: white;
-      font-size: 2.5rem;
-      font-weight: bold;
-      padding: 20px 0;
       text-align: center;
+      padding: 20px 10px;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 30px;
-      border-radius: 8px;
+    }
+
+    .container {
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 960px;
+      width: 95%;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
     }
 
     .search-bar {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
       margin-bottom: 20px;
-      flex-wrap: wrap;
     }
 
-    .search-bar input {
+    select, input, button {
       padding: 12px 15px;
-      font-size: 16px;
+      font-size: 1rem;
       border-radius: 8px;
       border: 1px solid #ccc;
-      flex-grow: 1;
-      min-width: 250px;
     }
 
-    .search-bar button {
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .search-bar .search-btn {
+    button {
       background-color: #0078d7;
       color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
     }
 
-    .search-bar .search-btn:hover {
-      background-color: #005ea3;
+    button:hover {
+      background-color: #005ea2;
     }
 
-    .search-bar .clear-btn {
-      background: #888;
-      color: white;
+    .info, .error {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1rem;
     }
 
-    .search-bar .clear-btn:hover {
-      background: #555;
-    }
-
-    #loading {
-      text-align: center;
-      margin-top: 15px;
+    .info {
+      background: #f0f4f8;
+      color: #444;
       font-style: italic;
-      color: #555;
-      display: none;
+    }
+
+    .error {
+      background: #ffe4e4;
+      color: #b10000;
+      font-weight: bold;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
     }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px 15px;
-      text-align: left;
-    }
-
-    th {
+    table thead {
       background-color: #0078d7;
       color: white;
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      font-size: 0.95rem;
     }
 
-    tr:hover {
-      background-color: #f1f1f1;
+    table tr:nth-child(even) {
+      background-color: #f2f2f2;
     }
 
-    @media (max-width: 600px) {
-      .search-bar {
-        flex-direction: column;
-      }
-
-      .search-bar button {
-        width: 100%;
-      }
-
-      table {
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
         display: block;
-        overflow-x: auto;
-        white-space: nowrap;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        margin-bottom: 15px;
+      }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        color: #0078d7;
       }
     }
   </style>
@@ -128,78 +136,79 @@
 
   <div class="brand-header">Exclusive Deal</div>
 
-  <div class="search-bar">
-    <input type="text" id="searchValue" placeholder="Enter Order ID or Email" />
-    <button class="search-btn" onclick="searchOrder()">Search</button>
-    <button class="clear-btn" onclick="clearSearch()">Clear</button>
+  <div class="container">
+    <h2>Order Lookup</h2>
+
+    <div class="search-bar">
+      <select id="searchType">
+        <option value="orderId">Order Id</option>
+        <option value="email">Email Address</option>
+      </select>
+      <input type="text" id="searchValue" placeholder="Enter your search" />
+      <button onclick="searchOrder()">Search</button>
+    </div>
+
+    <div id="result" class="info">Enter an Order Id or Email Address to search for order details.</div>
   </div>
 
-  <div id="loading">Searching...</div>
-  <div id="result"></div>
-
   <script>
-    const resultEl = document.getElementById('result');
-    const loadingEl = document.getElementById('loading');
-    const inputEl = document.getElementById('searchValue');
-
-    function clearSearch() {
-      inputEl.value = '';
-      resultEl.innerHTML = '';
-      inputEl.focus();
-    }
-
     async function searchOrder() {
-      const searchValue = inputEl.value.trim();
+      const searchType = document.getElementById('searchType').value;
+      const searchValue = document.getElementById('searchValue').value.trim();
+      const resultDiv = document.getElementById('result');
+
       if (!searchValue) {
-        resultEl.textContent = 'Please enter an Order ID or Email.';
+        resultDiv.className = 'error';
+        resultDiv.textContent = `⚠️ Please enter a valid ${searchType === 'orderId' ? 'Order Id' : 'Email Address'}.`;
         return;
       }
 
-      resultEl.innerHTML = '';
-      loadingEl.style.display = 'block';
+      resultDiv.className = 'info';
+      resultDiv.textContent = '🔎 Searching...';
 
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxNer9RJlPG1tJb3fVDfV2cjqRyON1cd3YFpZGst_2WjhE4kk8vkFRIQgcs8R1H4A0i/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzRrf7umdNvsEqOuRyQXKRY97kDdZttgF7xrfNxcCGJtWkp0EJlMRxnxUJTT2a5xmY7/exec'; // Replace with your actual Apps Script URL
+      const url = `${scriptUrl}?${searchType}=${encodeURIComponent(searchValue)}`;
 
       try {
-        const response = await fetch(`${scriptUrl}?searchValue=${encodeURIComponent(searchValue)}`);
+        const response = await fetch(url);
         const data = await response.json();
-        loadingEl.style.display = 'none';
 
         if (data.error) {
-          resultEl.textContent = `Error: ${data.error}`;
+          resultDiv.className = 'error';
+          resultDiv.textContent = `❌ ${data.error}`;
           return;
         }
 
-        if (data.length === 0) {
-          resultEl.textContent = 'No matching records found.';
+        if (!data.length) {
+          resultDiv.className = 'info';
+          resultDiv.textContent = '🔍 No matching records found.';
           return;
         }
 
-        const table = document.createElement('table');
+        // Generate Table
         const headers = Object.keys(data[0]);
-
-        const headerRow = document.createElement('tr');
-        headers.forEach(key => {
-          const th = document.createElement('th');
-          th.textContent = key;
-          headerRow.appendChild(th);
+        let tableHTML = '<table><thead><tr>';
+        headers.forEach(header => {
+          tableHTML += `<th>${header}</th>`;
         });
-        table.appendChild(headerRow);
+        tableHTML += '</tr></thead><tbody>';
 
         data.forEach(row => {
-          const tr = document.createElement('tr');
-          headers.forEach(key => {
-            const td = document.createElement('td');
-            td.textContent = row[key] || '';
-            tr.appendChild(td);
+          tableHTML += '<tr>';
+          headers.forEach(header => {
+            tableHTML += `<td data-label="${header}">${row[header] || ''}</td>`;
           });
-          table.appendChild(tr);
+          tableHTML += '</tr>';
         });
 
-        resultEl.appendChild(table);
+        tableHTML += '</tbody></table>';
+
+        resultDiv.className = 'result';
+        resultDiv.innerHTML = tableHTML;
+
       } catch (err) {
-        loadingEl.style.display = 'none';
-        resultEl.textContent = 'Error fetching data.';
+        resultDiv.className = 'error';
+        resultDiv.textContent = '⚠️ Failed to fetch data. Please try again later.';
         console.error(err);
       }
     }

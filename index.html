@@ -167,7 +167,7 @@
       resultDiv.textContent = '🔎 Searching...';
 
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy3YlDn8L6BPjeTglHNP7ncibWE6x4WgmiXGlA6M1Hruq5hd75Kkt-k_irFAVWSu6E/exec'; // Replace with your actual Apps Script URL
-      const url = `${scriptUrl}?${searchType}=${encodeURIComponent(searchValue)}`;
+      const url = `${scriptUrl}?${searchType}=${encodeURIComponent(searchValue)}&t=${Date.now()}`;
 
       try {
         const response = await fetch(url);
